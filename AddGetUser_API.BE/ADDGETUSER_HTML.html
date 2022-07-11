@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script>
+        //var url = "https://localhost:44300/home";
+        var url = "https://localhost:44300/api/Tester";
+        $(document).ready(function () {
+            getUserList();
+        });
+
+        function getUserList() {
+
+            $.ajax({
+                url: url,
+                async: false,
+                type: "GET",
+                dataType: "json",
+                //data: data,
+                success: function (result) {
+                    FillUsesTable(result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr);
+                }
+            });
+        }
+
+        function FillUsesTable(uselist) {
+            var body = '';
+
+            $.each(uselist ,function (i,index) {
+                body += "<tr>";
+                body += "<td>" + ((index.fname != null) ?  index.fname : "") + "</td>";
+                body += "<td>" + ((index.lname != null) ?  index.lname : "" )+ "</td>";
+                body += "<td>" + ((index.email != null) ?  index.email : "") + "</td>";
+                body += "<td>" + ((index.age != null) ?  index.age : "") + "</td>";
+                body += "</tr>";
+            });
+
+            $("#UserTable tr").remove();
+            $("#UserTable").append(body);
+
+        }
+
+        function SaveUser() {
+            var fn = $("#Fname").val();
+            var ln = $("#Lname").val();
+
+            var mails = $("#Ename").val();
+            var ages = $("#Age").val();
+
+            $.ajax({
+                url: url,
+                //async: false,
+                type: "POST",
+                dataType: "json",
+                data: JSON.stringify({ fname: fn, lname: ln, email: mails, age: ages }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (errMsg, xhr, ajaxOptions, thrownError) {
+                    console.log(errMsg);
+                    console.log(xhr);
+                }
+            });
+
+            $("#Fname").val("");
+            $("#Lname").val("");
+            $("#Email").val("");
+            $("#Age").val("");
+
+           setTimeout(getUserList(), 5000);
+
+        }
+
+         $("form").submit(function() {
+             if (validationIsTrue()) {
+                 // return true;
+                 SaveUser();
+             }
+             else {
+                 //return false;
+                 alert("מייל לא תקין")
+             }
+    });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div>
+                <h2>Add Get Users</h2>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 col-xs-8 col-md-8">
+                    <div>
+                        <h3>Users List</h3>
+                    </div>
+                    <div class="UserList">
+                        <table class="col-sm-10 col-xs-10 col-md-10">
+                            <thead>
+                                <tr>
+                                    <th>Ferst Name</th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th>Age</th>
+                                </tr>
+                            </thead>
+                            <tbody id="UserTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-xs-4 col-md-4">
+                    <form>
+                        <div>
+                            <h3>Add User</h3>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 col-md-12">
+                            <div class="row">Ferst Name</div>
+                            <div class="row">
+                                <input type="text" id="Fname" />
+                            </div>
+                            <div class="row">Last Name</div>
+                            <div class="row">
+                                <input type="text" id="Lname" />
+                            </div>
+                            <div class="row">Email</div>
+                            <div class="row">
+                                <input type="email" id="Ename" />
+                            </div>
+                            <div class="row">Age</div>
+                            <div class="row">
+                                <input type="number" id="Age" />
+                            </div>
+                            <div class="col-sm-10 col-xs-10 col-md-10">
+                                <input type="submit" class="btn pull-right" value="Sabmit" required />
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</body>
+</html>
